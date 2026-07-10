@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShoppyMart Demo Store</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="top-strip">
+      <span>Free delivery on orders above ₹999</span>
+      <span>Easy returns · Secure checkout · Demo marketplace</span>
+    </header>
+
+    <header class="store-header">
+      <a class="brand" href="#/">ShoppyMart</a>
+      <label class="search">
+        <span>Search</span>
+        <input id="searchInput" placeholder="Search shirts, sneakers, bags..." />
+      </label>
+      <nav class="store-nav" aria-label="Store pages">
+        <a href="#/">Home</a>
+        <a href="#/products">Products</a>
+        <a href="#/wishlist">Wishlist <span id="wishlistCount">0</span></a>
+        <a href="#/cart">Cart <span id="cartCount">0</span></a>
+      </nav>
+    </header>
+
+    <main class="store-shell">
+      <section id="homePage" class="page active">
+        <section class="hero">
+          <div>
+            <p class="eyebrow">New season styles</p>
+            <h1>Shop everyday fashion picks at demo prices.</h1>
+            <p>
+              Browse a realistic merchant storefront. Customer actions are
+              handled quietly in the background.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-link" href="#/products">Start Shopping</a>
+              <a class="secondary-link" href="#/wishlist">View Wishlist</a>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="image-placeholder hero-image">Marketplace Deals</div>
+            <strong>Up to 40% off selected styles</strong>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-heading">
+            <h2>Shop by category</h2>
+            <a href="#/products">View all</a>
+          </div>
+          <div id="categoryGrid" class="category-grid"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-heading">
+            <h2>Featured products</h2>
+            <a href="#/products">See catalog</a>
+          </div>
+          <div id="featuredGrid" class="product-grid"></div>
+        </section>
+      </section>
+
+      <section id="productsPage" class="page">
+        <div class="section-heading page-heading">
+          <div>
+            <p class="eyebrow">All products</p>
+            <h1>Explore the marketplace</h1>
+          </div>
+          <select id="categoryFilter" aria-label="Filter by category">
+            <option value="">All categories</option>
+          </select>
+        </div>
+        <div id="productGrid" class="product-grid"></div>
+      </section>
+
+      <section id="detailsPage" class="page">
+        <button class="ghost" id="backToProducts">← Back to products</button>
+        <div id="productDetails" class="details-card"></div>
+      </section>
+
+      <section id="cartPage" class="page">
+        <div class="section-heading page-heading">
+          <div>
+            <p class="eyebrow">Shopping cart</p>
+            <h1>Your cart</h1>
+          </div>
+          <a class="primary-link" href="#/checkout">Checkout</a>
+        </div>
+        <div id="cartItems" class="product-grid"></div>
+      </section>
+
+      <section id="wishlistPage" class="page">
+        <div class="section-heading page-heading">
+          <div>
+            <p class="eyebrow">Saved items</p>
+            <h1>Your wishlist</h1>
+          </div>
+          <a class="secondary-link" href="#/products">Keep shopping</a>
+        </div>
+        <div id="wishlistItems" class="product-grid"></div>
+      </section>
+
+      <section id="checkoutPage" class="page">
+        <div class="checkout">
+          <div class="checkout-form">
+            <p class="eyebrow">Secure checkout</p>
+            <h1>Delivery details</h1>
+            <label>
+              Full name
+              <input value="Demo Shopper" />
+            </label>
+            <label>
+              Mobile number
+              <input value="+91 98765 43210" />
+            </label>
+            <label>
+              Address
+              <textarea>221B Demo Street, Bengaluru</textarea>
+            </label>
+            <button type="button">Place demo order</button>
+          </div>
+          <aside class="order-summary">
+            <h2>Order summary</h2>
+            <div id="checkoutItems" class="summary-list"></div>
+            <div class="summary-total">
+              <span>Total</span>
+              <strong id="checkoutTotal">₹0</strong>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

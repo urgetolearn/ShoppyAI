@@ -1,0 +1,10 @@
+{
+  "name": "shoppy-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Incremental AI shopping reminder agent prototype.",
+  "scripts": {
+    "demo": "node src/demo/shoppy-demo.js",
+    "ui": "node src/server.js"
+  }
+}

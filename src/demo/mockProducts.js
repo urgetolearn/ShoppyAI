@@ -1,0 +1,37 @@
+const mockProducts = [
+  ['blue-oversized-shirt', 'Blue Oversized Shirt', 'shirts', 'blue', 1499],
+  ['black-running-sneakers', 'Black Running Sneakers', 'sneakers', 'black', 2299],
+  ['green-cotton-hoodie', 'Green Cotton Hoodie', 'hoodies', 'green', 1999],
+  ['white-linen-shirt', 'White Linen Shirt', 'shirts', 'white', 1799],
+  ['tan-crossbody-bag', 'Tan Crossbody Bag', 'bags', 'tan', 2499],
+  ['red-summer-dress', 'Red Summer Dress', 'dresses', 'red', 1899],
+  ['navy-denim-jacket', 'Navy Denim Jacket', 'jackets', 'navy', 2999],
+  ['cream-knit-cardigan', 'Cream Knit Cardigan', 'cardigans', 'cream', 2199],
+  ['grey-training-joggers', 'Grey Training Joggers', 'joggers', 'grey', 1599],
+  ['pink-crop-top', 'Pink Crop Top', 'tops', 'pink', 899],
+  ['brown-leather-belt', 'Brown Leather Belt', 'accessories', 'brown', 799],
+  ['black-formal-trousers', 'Black Formal Trousers', 'trousers', 'black', 1899],
+  ['blue-slim-jeans', 'Blue Slim Jeans', 'jeans', 'blue', 2099],
+  ['olive-cargo-pants', 'Olive Cargo Pants', 'pants', 'olive', 1999],
+  ['yellow-graphic-tee', 'Yellow Graphic Tee', 't-shirts', 'yellow', 999],
+  ['purple-yoga-set', 'Purple Yoga Set', 'activewear', 'purple', 2699],
+  ['beige-canvas-sneakers', 'Beige Canvas Sneakers', 'sneakers', 'beige', 1699],
+  ['orange-running-shorts', 'Orange Running Shorts', 'shorts', 'orange', 1199],
+  ['black-mini-backpack', 'Black Mini Backpack', 'bags', 'black', 2299],
+  ['blue-satin-scarf', 'Blue Satin Scarf', 'accessories', 'blue', 699],
+].map(([id, title, category, color, price]) => ({
+  id,
+  title,
+  price,
+  currency: 'INR',
+  url: `/store/product/${id}`,
+  imageUrl: `/assets/${id}.jpg`,
+  metadata: {
+    category,
+    tags: [color, category],
+    color,
+    retailer: 'ShoppyAI Merchant Demo',
+  },
+}));
+
+module.exports = { mockProducts };
