@@ -1,8 +1,10 @@
+require('dotenv').config();
+
 const { BasicInterestTracker } = require('../application/BasicInterestTracker');
 const { InterestScoringEngine } = require('../application/InterestScoringEngine');
 const { ReminderRunner } = require('../application/ReminderRunner');
 const { Scheduler } = require('../application/Scheduler');
-const { SimpleMessageGenerator } = require('../application/SimpleMessageGenerator');
+const { BehaviorAwareMessageGenerator } = require('../application/BehaviorAwareMessageGenerator');
 const { SimpleReminderPlanner } = require('../application/SimpleReminderPlanner');
 const {
   InMemoryMemoryService,
@@ -100,7 +102,7 @@ async function runDemo() {
     memoryService,
     preferenceMemory,
     reminderPlanner: new SimpleReminderPlanner(),
-    messageGenerator: new SimpleMessageGenerator(),
+    messageGenerator: new BehaviorAwareMessageGenerator(),
     notificationService: new ConsoleNotificationProvider(),
     channel: 'console',
   });

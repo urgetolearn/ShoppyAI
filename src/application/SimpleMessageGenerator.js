@@ -1,5 +1,5 @@
 class SimpleMessageGenerator {
-  generateReminderMessage({ product, interest, preferences = {} }) {
+  async generateReminderMessage({ product, interest, preferences = {} }) {
     const productName = product.title.toLowerCase();
     const color = this.findMatchingValue(
       product,

@@ -53,7 +53,7 @@ class ReminderRunner {
       }
 
       const preferences = await this.preferenceMemory.getPreferences(user.id);
-      const message = this.messageGenerator.generateReminderMessage({
+      const message = await this.messageGenerator.generateReminderMessage({
         user,
         product,
         interest,
@@ -74,8 +74,27 @@ class ReminderRunner {
         createdAt: evaluatedAt,
       });
 
-      await this.notificationService.send(this.channel, user, message);
-      await this.memoryService.markReminderSent(reminder.id, evaluatedAt);
+      console.log("📱 About to send notification...");
+      console.log(
+        "Notification service:",
+        this.notificationService.constructor.name
+      );
+      console.log("Channel:", this.channel);
+      console.log("User:", user);
+      console.log("Message:", message);
+
+      try {
+        const result = await this.notificationService.send(
+          this.channel,
+          user,
+          message
+        );
+
+        console.log("✅ Notification sent!");
+        console.log(result);
+      } catch (err) {
+        console.error("❌ Notification error:", err);
+      } await this.memoryService.markReminderSent(reminder.id, evaluatedAt);
       sentCount += 1;
     }
 

@@ -6,7 +6,7 @@ const { BasicInterestTracker } = require('./application/BasicInterestTracker');
 const { InterestScoringEngine } = require('./application/InterestScoringEngine');
 const { ReminderRunner } = require('./application/ReminderRunner');
 const { Scheduler } = require('./application/Scheduler');
-const { SimpleMessageGenerator } = require('./application/SimpleMessageGenerator');
+const { BehaviorAwareMessageGenerator } = require('./application/BehaviorAwareMessageGenerator');
 const { SimpleReminderPlanner } = require('./application/SimpleReminderPlanner');
 const {
   InMemoryMemoryService,
@@ -72,7 +72,7 @@ function createAppState() {
     memoryService,
     preferenceMemory,
     reminderPlanner,
-    messageGenerator: new SimpleMessageGenerator(),
+    messageGenerator: new BehaviorAwareMessageGenerator(),
     notificationService,
     channel: notificationChannel,
   });
