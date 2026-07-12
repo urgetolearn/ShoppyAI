@@ -1,3 +1,4 @@
+require('dotenv').config();
 const http = require('node:http');
 const fs = require('node:fs/promises');
 const path = require('node:path');
@@ -16,6 +17,8 @@ const {
 const {
   ConsoleNotificationProvider,
 } = require('./infrastructure/notifications/ConsoleNotificationProvider');
+const { NotificationService } = require('./infrastructure/notifications/NotificationService');
+const { TwilioWhatsAppProvider } = require('./infrastructure/notifications/TwilioWhatsAppProvider');
 const { mockProducts } = require('./demo/mockProducts');
 
 const PORT = Number(process.env.PORT ?? 3000);
@@ -51,13 +54,27 @@ function createAppState() {
     new InterestScoringEngine(),
   );
 
+  const notificationChannel =
+    process.env.NOTIFICATION_CHANNEL === 'whatsapp' ? 'whatsapp' : 'console';
+
+  const notificationService = new NotificationService({
+    channel: notificationChannel,
+    consoleProvider: new ConsoleNotificationProvider(),
+    whatsappProvider: new TwilioWhatsAppProvider({
+      accountSid: process.env.TWILIO_ACCOUNT_SID,
+      authToken: process.env.TWILIO_AUTH_TOKEN,
+      from: process.env.TWILIO_WHATSAPP_FROM,
+      to: process.env.TWILIO_WHATSAPP_TO,
+    }),
+  });
+
   const reminderRunner = new ReminderRunner({
     memoryService,
     preferenceMemory,
     reminderPlanner,
     messageGenerator: new SimpleMessageGenerator(),
-    notificationService: new ConsoleNotificationProvider(),
-    channel: 'console',
+    notificationService,
+    channel: notificationChannel,
   });
 
   const scheduler = new Scheduler({
@@ -79,6 +96,7 @@ function createAppState() {
     preferenceMemory,
     reminderPlanner,
     interestTracker,
+    notificationService,
     reminderRunner,
     scheduler,
     user,
@@ -150,6 +168,18 @@ function createServer(state = createAppState()) {
         const result = await createInterest(state, payload);
         const runnerResult = await state.reminderRunner.run(new Date());
         return sendJson(response, { ...result, runnerResult }, 201);
+      }
+
+      if (request.method === 'POST' && request.url === '/api/test-whatsapp') {
+        const payload = await readJson(request);
+        const message = String(payload.message ?? '').trim();
+
+        if (!message) {
+          return sendJson(response, { error: 'message is required' }, 400);
+        }
+
+        const result = await state.notificationService.send('whatsapp', state.user, message);
+        return sendJson(response, { success: true, result }, 200);
       }
 
       if (request.method === 'GET' && request.url.startsWith('/assets/')) {
