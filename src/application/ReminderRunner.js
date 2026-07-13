@@ -7,6 +7,7 @@ class ReminderRunner {
     reminderPlanner,
     messageGenerator,
     notificationService,
+    styleVisualizationService = null,
     channel = 'console',
     publicBaseUrl,
   }) {
@@ -15,6 +16,7 @@ class ReminderRunner {
     this.reminderPlanner = reminderPlanner;
     this.messageGenerator = messageGenerator;
     this.notificationService = notificationService;
+    this.styleVisualizationService = styleVisualizationService;
     this.channel = channel;
     this.publicBaseUrl = publicBaseUrl;
   }
@@ -63,6 +65,19 @@ class ReminderRunner {
         channel: this.channel,
       });
 
+      // Try AI-generated lifestyle image first; fall back to product asset URL
+      let mediaUrl = this.getProductMediaUrl(product);
+      if (this.styleVisualizationService) {
+        const generatedUrl = await this.styleVisualizationService.generateImageUrl({
+          user,
+          product,
+          preferences,
+        });
+        if (generatedUrl) {
+          mediaUrl = generatedUrl;
+        }
+      }
+
       const reminder = await this.memoryService.saveReminder({
         id: randomUUID(),
         userId: user.id,
@@ -72,7 +87,7 @@ class ReminderRunner {
         scheduledFor: plan.scheduledFor ?? evaluatedAt,
         status: 'pending',
         channel: this.channel,
-        mediaUrl: this.getProductMediaUrl(product),
+        mediaUrl,
         priority: plan.priority,
         createdAt: evaluatedAt,
       });

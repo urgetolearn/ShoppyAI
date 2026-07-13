@@ -8,6 +8,7 @@
     "ui": "node src/server.js"
   },
   "dependencies": {
+    "@google/generative-ai": "0.24.1",
     "dotenv": "^16.0.0",
     "twilio": "^4.0.0"
   }

@@ -22,11 +22,16 @@ const { TwilioWhatsAppProvider } = require('./infrastructure/notifications/Twili
 const { UserProfileService } = require('./application/UserProfileService');
 const { ProfilePhotoStorage } = require('./infrastructure/storage/ProfilePhotoStorage');
 const { mockProducts } = require('./demo/mockProducts');
+const { PromptBuilder } = require('./application/PromptBuilder');
+const { StyleVisualizationService } = require('./application/StyleVisualizationService');
+const { GeminiImageProvider } = require('./infrastructure/imagegen/GeminiImageProvider');
+const { GeneratedImageStorage } = require('./infrastructure/imagegen/GeneratedImageStorage');
 
 const PORT = Number(process.env.PORT ?? 3000);
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const ASSETS_DIR = path.join(__dirname, 'demo', 'assets');
 const UPLOADS_DIR = path.join(__dirname, '..', 'demo', 'uploads');
+const GENERATED_DIR = path.join(__dirname, 'demo', 'generated');
 const DEMO_TIME_OFFSET_MS = 3.25 * 60 * 60 * 1000;
 const PUBLIC_BASE_URL =
   process.env.PUBLIC_BASE_URL ??
@@ -42,6 +47,7 @@ const SUPPORTED_EVENTS = [
   'checkout_started',
   'purchase_completed',
 ];
+
 function createAppState() {
   const memoryService = new InMemoryMemoryService();
   const preferenceMemory = new UserPreferenceMemory();
@@ -78,12 +84,27 @@ function createAppState() {
     }),
   });
 
+  const styleVisualizationService = process.env.GEMINI_API_KEY
+    ? new StyleVisualizationService({
+      promptBuilder: new PromptBuilder(),
+      imageProvider: new GeminiImageProvider({
+        apiKey: process.env.GEMINI_API_KEY,
+      }),
+      imageStorage: new GeneratedImageStorage({
+        storageDir: GENERATED_DIR,
+        publicBasePath: '/generated',
+      }),
+      publicBaseUrl: PUBLIC_BASE_URL,
+    })
+    : null;
+
   const reminderRunner = new ReminderRunner({
     memoryService,
     preferenceMemory,
     reminderPlanner,
     messageGenerator: new BehaviorAwareMessageGenerator(),
     notificationService,
+    styleVisualizationService,
     channel: notificationChannel,
     publicBaseUrl: PUBLIC_BASE_URL,
   });
@@ -212,6 +233,10 @@ function createServer(state = createAppState()) {
 
       if (request.method === 'GET' && request.url.startsWith('/uploads/')) {
         return sendUploadFile(response, request.url.slice('/uploads/'.length));
+      }
+
+      if (request.method === 'GET' && request.url.startsWith('/generated/')) {
+        return sendGeneratedFile(response, request.url.slice('/generated/'.length));
       }
 
       if (request.method === 'GET') {
@@ -593,6 +618,29 @@ async function sendUploadFile(response, filePath) {
   }
 }
 
+async function sendGeneratedFile(response, filePath) {
+  const absolutePath = path.normalize(path.join(GENERATED_DIR, filePath));
+
+  if (!absolutePath.startsWith(GENERATED_DIR)) {
+    return sendJson(response, { error: 'Invalid file path' }, 400);
+  }
+
+  try {
+    const content = await fs.readFile(absolutePath);
+    response.writeHead(200, {
+      'Cache-Control': 'no-store',
+      'Content-Type': getContentType(absolutePath),
+    });
+    response.end(content);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return sendJson(response, { error: 'Generated image not found' }, 404);
+    }
+
+    throw error;
+  }
+}
+
 function getContentType(filePath) {
   if (filePath.endsWith('.css')) {
     return 'text/css; charset=utf-8';
@@ -659,6 +707,11 @@ if (require.main === module) {
       console.log(`ShoppyAI UI running at http://localhost:${PORT}`);
       console.log('Agent scheduler runs every 30 seconds.');
       console.log(`Product media base URL: ${PUBLIC_BASE_URL}`);
+      if (process.env.GEMINI_API_KEY) {
+        console.log('AI image generation: enabled (Gemini)');
+      } else {
+        console.log('AI image generation: disabled (set GEMINI_API_KEY to enable)');
+      }
       if (process.env.NOTIFICATION_CHANNEL === 'whatsapp' && PUBLIC_BASE_URL.includes('localhost')) {
         console.log('Tip: set PUBLIC_BASE_URL to an ngrok/public URL so Twilio can fetch product images.');
       }
