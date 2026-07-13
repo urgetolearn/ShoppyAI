@@ -5,11 +5,11 @@ class NotificationService {
         this.whatsappProvider = whatsappProvider;
     }
 
-    async send(channel, user, message) {
+    async send(channel, user, message, mediaUrl) {
         const effectiveChannel = channel ?? this.channel;
 
         if (effectiveChannel === 'console') {
-            return this.consoleProvider.send('console', user, message);
+            return this.consoleProvider.send('console', user, message, mediaUrl);
         }
 
         if (effectiveChannel === 'whatsapp') {
@@ -18,6 +18,19 @@ class NotificationService {
             }
 
             const recipient = user?.phone ?? process.env.TWILIO_WHATSAPP_TO;
+            if (mediaUrl) {
+                try {
+                    return await this.whatsappProvider.sendMessage({
+                        to: recipient,
+                        body: message,
+                        mediaUrl,
+                    });
+                } catch (error) {
+                    console.warn('WhatsApp media send failed. Falling back to text-only message.');
+                    console.warn(error.message);
+                }
+            }
+
             return this.whatsappProvider.sendMessage({
                 to: recipient,
                 body: message,

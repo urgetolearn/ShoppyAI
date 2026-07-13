@@ -28,6 +28,10 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const ASSETS_DIR = path.join(__dirname, 'demo', 'assets');
 const UPLOADS_DIR = path.join(__dirname, '..', 'demo', 'uploads');
 const DEMO_TIME_OFFSET_MS = 3.25 * 60 * 60 * 1000;
+const PUBLIC_BASE_URL =
+  process.env.PUBLIC_BASE_URL ??
+  process.env.APP_PUBLIC_URL ??
+  `http://localhost:${PORT}`;
 
 const SUPPORTED_EVENTS = [
   'product_view',
@@ -81,6 +85,7 @@ function createAppState() {
     messageGenerator: new BehaviorAwareMessageGenerator(),
     notificationService,
     channel: notificationChannel,
+    publicBaseUrl: PUBLIC_BASE_URL,
   });
 
   const scheduler = new Scheduler({
@@ -653,6 +658,10 @@ if (require.main === module) {
     server.listen(PORT, () => {
       console.log(`ShoppyAI UI running at http://localhost:${PORT}`);
       console.log('Agent scheduler runs every 30 seconds.');
+      console.log(`Product media base URL: ${PUBLIC_BASE_URL}`);
+      if (process.env.NOTIFICATION_CHANNEL === 'whatsapp' && PUBLIC_BASE_URL.includes('localhost')) {
+        console.log('Tip: set PUBLIC_BASE_URL to an ngrok/public URL so Twilio can fetch product images.');
+      }
     });
   });
 }

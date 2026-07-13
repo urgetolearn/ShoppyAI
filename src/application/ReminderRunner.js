@@ -8,6 +8,7 @@ class ReminderRunner {
     messageGenerator,
     notificationService,
     channel = 'console',
+    publicBaseUrl,
   }) {
     this.memoryService = memoryService;
     this.preferenceMemory = preferenceMemory;
@@ -15,6 +16,7 @@ class ReminderRunner {
     this.messageGenerator = messageGenerator;
     this.notificationService = notificationService;
     this.channel = channel;
+    this.publicBaseUrl = publicBaseUrl;
   }
 
   async run(evaluatedAt = new Date()) {
@@ -70,6 +72,7 @@ class ReminderRunner {
         scheduledFor: plan.scheduledFor ?? evaluatedAt,
         status: 'pending',
         channel: this.channel,
+        mediaUrl: this.getProductMediaUrl(product),
         priority: plan.priority,
         createdAt: evaluatedAt,
       });
@@ -87,18 +90,37 @@ class ReminderRunner {
         const result = await this.notificationService.send(
           this.channel,
           user,
-          message
+          message,
+          reminder.mediaUrl
         );
 
         console.log("✅ Notification sent!");
         console.log(result);
+
+        await this.memoryService.markReminderSent(reminder.id, evaluatedAt);
+        sentCount += 1;
       } catch (err) {
         console.error("❌ Notification error:", err);
-      } await this.memoryService.markReminderSent(reminder.id, evaluatedAt);
-      sentCount += 1;
+      }
     }
 
     return { sentCount, evaluatedAt };
+  }
+
+  getProductMediaUrl(product) {
+    if (!product?.imageUrl) {
+      return undefined;
+    }
+
+    if (/^https?:\/\//i.test(product.imageUrl)) {
+      return product.imageUrl;
+    }
+
+    if (!this.publicBaseUrl) {
+      return undefined;
+    }
+
+    return new URL(product.imageUrl, this.publicBaseUrl).toString();
   }
 }
 

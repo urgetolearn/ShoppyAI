@@ -32,6 +32,7 @@ export interface Reminder {
   scheduledFor: Date;
   status: ReminderStatus;
   priority?: ReminderPriority;
+  mediaUrl?: string;
   channel?: ReminderChannel;
   createdAt: Date;
   sentAt?: Date;

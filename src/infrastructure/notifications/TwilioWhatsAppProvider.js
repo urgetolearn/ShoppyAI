@@ -23,7 +23,7 @@ class TwilioWhatsAppProvider extends WhatsAppProvider {
         return this.client;
     }
 
-    async sendMessage({ to, body }) {
+    async sendMessage({ to, body, mediaUrl }) {
         if (!to) {
             throw new Error('WhatsApp destination number is required.');
         }
@@ -40,11 +40,17 @@ class TwilioWhatsAppProvider extends WhatsAppProvider {
             throw new Error('TWILIO_WHATSAPP_FROM and TWILIO_WHATSAPP_TO must be configured.');
         }
 
-        return client.messages.create({
+        const payload = {
             body,
             from: fromAddress,
             to: toAddress,
-        });
+        };
+
+        if (mediaUrl) {
+            payload.mediaUrl = [mediaUrl];
+        }
+
+        return client.messages.create(payload);
     }
 }
 
