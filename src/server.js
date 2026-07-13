@@ -19,11 +19,14 @@ const {
 } = require('./infrastructure/notifications/ConsoleNotificationProvider');
 const { NotificationService } = require('./infrastructure/notifications/NotificationService');
 const { TwilioWhatsAppProvider } = require('./infrastructure/notifications/TwilioWhatsAppProvider');
+const { UserProfileService } = require('./application/UserProfileService');
+const { ProfilePhotoStorage } = require('./infrastructure/storage/ProfilePhotoStorage');
 const { mockProducts } = require('./demo/mockProducts');
 
 const PORT = Number(process.env.PORT ?? 3000);
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const ASSETS_DIR = path.join(__dirname, 'demo', 'assets');
+const UPLOADS_DIR = path.join(__dirname, '..', 'demo', 'uploads');
 const DEMO_TIME_OFFSET_MS = 3.25 * 60 * 60 * 1000;
 
 const SUPPORTED_EVENTS = [
@@ -39,6 +42,9 @@ function createAppState() {
   const memoryService = new InMemoryMemoryService();
   const preferenceMemory = new UserPreferenceMemory();
   const reminderPlanner = new SimpleReminderPlanner();
+  const userProfileService = new UserProfileService({
+    storage: new ProfilePhotoStorage({ uploadDir: UPLOADS_DIR }),
+  });
   const user = {
     id: 'demo_user',
     name: 'Demo Shopper',
@@ -95,6 +101,7 @@ function createAppState() {
     memoryService,
     preferenceMemory,
     reminderPlanner,
+    userProfileService,
     interestTracker,
     notificationService,
     reminderRunner,
@@ -146,6 +153,18 @@ function createServer(state = createAppState()) {
         return sendJson(response, getProductsByIds(state, state.wishlistProductIds));
       }
 
+      if (request.method === 'GET' && request.url === '/api/profile') {
+        return sendJson(response, await state.userProfileService.getProfile(state.user));
+      }
+
+      if (request.method === 'POST' && request.url === '/api/profile/photo') {
+        const result = await state.userProfileService.uploadPhotoFromRequest({
+          user: state.user,
+          request,
+        });
+        return sendJson(response, result, 201);
+      }
+
       if (request.method === 'POST' && request.url === '/api/events') {
         const payload = await readJson(request);
         const eventType = String(payload.eventType ?? '');
@@ -184,6 +203,10 @@ function createServer(state = createAppState()) {
 
       if (request.method === 'GET' && request.url.startsWith('/assets/')) {
         return sendAssetFile(response, request.url.slice(1));
+      }
+
+      if (request.method === 'GET' && request.url.startsWith('/uploads/')) {
+        return sendUploadFile(response, request.url.slice('/uploads/'.length));
       }
 
       if (request.method === 'GET') {
@@ -536,6 +559,29 @@ async function sendAssetFile(response, filePath) {
   } catch (error) {
     if (error.code === 'ENOENT') {
       return sendJson(response, { error: 'Asset not found' }, 404);
+    }
+
+    throw error;
+  }
+}
+
+async function sendUploadFile(response, filePath) {
+  const absolutePath = path.normalize(path.join(UPLOADS_DIR, filePath));
+
+  if (!absolutePath.startsWith(UPLOADS_DIR)) {
+    return sendJson(response, { error: 'Invalid file path' }, 400);
+  }
+
+  try {
+    const content = await fs.readFile(absolutePath);
+    response.writeHead(200, {
+      'Cache-Control': 'no-store',
+      'Content-Type': getContentType(absolutePath),
+    });
+    response.end(content);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return sendJson(response, { error: 'Upload not found' }, 404);
     }
 
     throw error;

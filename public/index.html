@@ -21,6 +21,7 @@
       <nav class="store-nav" aria-label="Store pages">
         <a href="#/">Home</a>
         <a href="#/products">Products</a>
+        <a href="#/profile">Style Profile</a>
         <a href="#/wishlist">Wishlist <span id="wishlistCount">0</span></a>
         <a href="#/cart">Cart <span id="cartCount">0</span></a>
       </nav>
@@ -129,6 +130,35 @@
             <div class="summary-total">
               <span>Total</span>
               <strong id="checkoutTotal">₹0</strong>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="profilePage" class="page">
+        <div class="profile-layout">
+          <div class="profile-card">
+            <p class="eyebrow">Optional style profile</p>
+            <h1>Upload a full-body photo</h1>
+            <p class="muted">
+              This is optional and does not affect reminders yet. In the next
+              milestone, ShoppyAI can use it for AI-powered visual reminders.
+            </p>
+
+            <form id="profilePhotoForm" class="profile-form">
+              <label>
+                Full-body profile photo
+                <input id="profilePhotoInput" name="photo" type="file" accept="image/*" required />
+              </label>
+              <button type="submit">Save Style Profile</button>
+            </form>
+            <p id="profileStatus" class="form-status"></p>
+          </div>
+
+          <aside class="profile-preview-card">
+            <h2>Current profile photo</h2>
+            <div id="profilePhotoPreview" class="profile-preview empty">
+              No photo uploaded yet.
             </div>
           </aside>
         </div>

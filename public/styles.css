@@ -432,10 +432,45 @@ button,
 }
 
 .checkout-form,
-.order-summary {
+.order-summary,
+.profile-card,
+.profile-preview-card {
   display: grid;
   gap: 16px;
   padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 22px;
+}
+
+.profile-form {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-preview {
+  display: grid;
+  gap: 10px;
+}
+
+.profile-preview img {
+  width: 100%;
+  max-height: 520px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.form-status {
+  margin: 0;
+  color: var(--success);
+  font-weight: 900;
 }
 
 label {
@@ -488,7 +523,8 @@ textarea {
   .store-header,
   .hero,
   .details-card,
-  .checkout {
+  .checkout,
+  .profile-layout {
     grid-template-columns: 1fr;
   }
 }

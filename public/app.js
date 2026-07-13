@@ -9,6 +9,9 @@ const cartItems = document.querySelector('#cartItems');
 const wishlistItems = document.querySelector('#wishlistItems');
 const checkoutItems = document.querySelector('#checkoutItems');
 const checkoutTotal = document.querySelector('#checkoutTotal');
+const profilePhotoForm = document.querySelector('#profilePhotoForm');
+const profilePhotoPreview = document.querySelector('#profilePhotoPreview');
+const profileStatus = document.querySelector('#profileStatus');
 const cartCount = document.querySelector('#cartCount');
 const wishlistCount = document.querySelector('#wishlistCount');
 const backToProducts = document.querySelector('#backToProducts');
@@ -29,6 +32,7 @@ searchInput.addEventListener('input', () => {
 });
 
 categoryFilter.addEventListener('change', renderProductListing);
+profilePhotoForm.addEventListener('submit', uploadProfilePhoto);
 window.addEventListener('hashchange', renderRoute);
 window.addEventListener('beforeunload', () => {
   void trackTimeSpent();
@@ -82,6 +86,12 @@ async function renderRoute() {
   if (hash === '#/checkout') {
     showPage('checkoutPage');
     await renderCheckout();
+    return;
+  }
+
+  if (hash === '#/profile') {
+    showPage('profilePage');
+    await renderProfile();
     return;
   }
 
@@ -234,6 +244,52 @@ async function renderCheckout() {
     : '<div class="empty">Your cart is empty.</div>';
   checkoutTotal.textContent = `₹${cart.reduce((total, product) => total + product.price, 0)}`;
   await refreshCustomerState();
+}
+
+async function renderProfile() {
+  const profile = await fetchJson('/api/profile');
+  const photo = profile.profile?.photo;
+
+  if (!photo?.url) {
+    profilePhotoPreview.className = 'profile-preview empty';
+    profilePhotoPreview.textContent = 'No photo uploaded yet.';
+    return;
+  }
+
+  profilePhotoPreview.className = 'profile-preview';
+  profilePhotoPreview.innerHTML = `
+    <img src="${escapeHtml(photo.url)}" alt="Uploaded style profile" />
+    <small>${escapeHtml(photo.fileName)}</small>
+  `;
+}
+
+async function uploadProfilePhoto(event) {
+  event.preventDefault();
+  const fileInput = profilePhotoForm.querySelector('input[name="photo"]');
+
+  if (!fileInput.files.length) {
+    profileStatus.textContent = 'Please choose a full-body photo first.';
+    return;
+  }
+
+  const formData = new FormData(profilePhotoForm);
+
+  profileStatus.textContent = 'Uploading style profile photo...';
+
+  const response = await fetch('/api/profile/photo', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    profileStatus.textContent = error.error ?? 'Upload failed.';
+    return;
+  }
+
+  profileStatus.textContent = 'Style profile saved locally.';
+  profilePhotoForm.reset();
+  await renderProfile();
 }
 
 function bindEventButtons(container) {
