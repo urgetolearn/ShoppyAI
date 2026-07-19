@@ -350,7 +350,7 @@ async function refreshCustomerState() {
 function productImage(product, size = '') {
   return `
     <div class="product-image ${size}" style="${artStyle(product)}">
-      <img src="/assets/${product.id}.jpg" alt="${escapeHtml(product.title)}" loading="lazy" onerror="this.hidden = true" />
+      <img src="${product.imageUrl || `/assets/${product.id}.jpg`}" alt="${escapeHtml(product.title)}" loading="lazy" onerror="this.hidden = true" />
       <div class="image-placeholder">
         <span>${escapeHtml(product.metadata?.color ?? '')}</span>
         <strong>${escapeHtml(product.metadata?.category ?? 'Product')}</strong>

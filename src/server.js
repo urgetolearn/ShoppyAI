@@ -24,7 +24,8 @@ const { ProfilePhotoStorage } = require('./infrastructure/storage/ProfilePhotoSt
 const { mockProducts } = require('./demo/mockProducts');
 const { PromptBuilder } = require('./application/PromptBuilder');
 const { StyleVisualizationService } = require('./application/StyleVisualizationService');
-const { GeminiImageProvider } = require('./infrastructure/imagegen/GeminiImageProvider');
+const { FluxImageProvider } = require('./infrastructure/imagegen/FluxImageProvider');
+const { FalCatVtonProvider } = require('./infrastructure/imagegen/FalCatVtonProvider');
 const { GeneratedImageStorage } = require('./infrastructure/imagegen/GeneratedImageStorage');
 
 const PORT = Number(process.env.PORT ?? 3000);
@@ -84,19 +85,29 @@ function createAppState() {
     }),
   });
 
-  const styleVisualizationService = process.env.GEMINI_API_KEY
-    ? new StyleVisualizationService({
+  const styleVisualizationService = (() => {
+    // FAL_KEY → CatVTON (VTON model, needs person + garment images)
+    // REPLICATE_API_TOKEN → FLUX.1 Kontext (generative, prompt-based)
+    // Neither → no image generation; reminders fall back to product asset
+    const imageProvider = process.env.FAL_KEY
+      ? new FalCatVtonProvider({ apiKey: process.env.FAL_KEY })
+      : process.env.REPLICATE_API_TOKEN
+        ? new FluxImageProvider({ apiToken: process.env.REPLICATE_API_TOKEN })
+        : null;
+
+    if (!imageProvider) return null;
+
+    return new StyleVisualizationService({
       promptBuilder: new PromptBuilder(),
-      imageProvider: new GeminiImageProvider({
-        apiKey: process.env.GEMINI_API_KEY,
-      }),
+      imageProvider,
       imageStorage: new GeneratedImageStorage({
         storageDir: GENERATED_DIR,
         publicBasePath: '/generated',
       }),
       publicBaseUrl: PUBLIC_BASE_URL,
-    })
-    : null;
+      assetsDir: ASSETS_DIR,
+    });
+  })();
 
   const reminderRunner = new ReminderRunner({
     memoryService,
@@ -707,10 +718,12 @@ if (require.main === module) {
       console.log(`ShoppyAI UI running at http://localhost:${PORT}`);
       console.log('Agent scheduler runs every 30 seconds.');
       console.log(`Product media base URL: ${PUBLIC_BASE_URL}`);
-      if (process.env.GEMINI_API_KEY) {
-        console.log('AI image generation: enabled (Gemini)');
+      if (process.env.FAL_KEY) {
+        console.log('AI image generation: enabled (CatVTON via fal.ai)');
+      } else if (process.env.REPLICATE_API_TOKEN) {
+        console.log('AI image generation: enabled (FLUX.1 Kontext via Replicate)');
       } else {
-        console.log('AI image generation: disabled (set GEMINI_API_KEY to enable)');
+        console.log('AI image generation: disabled (set FAL_KEY to enable CatVTON)');
       }
       if (process.env.NOTIFICATION_CHANNEL === 'whatsapp' && PUBLIC_BASE_URL.includes('localhost')) {
         console.log('Tip: set PUBLIC_BASE_URL to an ngrok/public URL so Twilio can fetch product images.');

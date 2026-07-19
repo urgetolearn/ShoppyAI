@@ -37,11 +37,11 @@ async function runDemo() {
 
   const shirt = {
     id: 'product_blue_oversized_shirt',
-    title: 'Blue oversized shirt',
+    title: 'Blue Oversized Shirt',
     price: 1499,
     currency: 'INR',
     url: 'https://example.com/products/blue-oversized-shirt',
-    imageUrl: './assets/blue-oversized-shirt.jpg',
+    imageUrl: './assets/blue-oversized-shirt.png',
     metadata: {
       category: 'shirts',
       brand: 'ShoppyAI Demo',
@@ -49,30 +49,30 @@ async function runDemo() {
     },
   };
 
-  const sneakers = {
-    id: 'product_black_sneakers',
-    title: 'Black running sneakers',
-    price: 2299,
+  const jacket = {
+    id: 'product_navy_denim_jacket',
+    title: 'Navy Denim Jacket',
+    price: 2999,
     currency: 'INR',
-    url: 'https://example.com/products/black-running-sneakers',
-    imageUrl: './assets/black-running-sneakers.jpg',
+    url: 'https://example.com/products/navy-denim-jacket',
+    imageUrl: './assets/navy-denim-jacket.jpg',
     metadata: {
-      category: 'sneakers',
+      category: 'jackets',
       brand: 'ShoppyAI Demo',
-      tags: ['black', 'running', 'comfortable'],
+      tags: ['navy', 'denim', 'casual'],
     },
   };
 
   await memoryService.saveUser(user);
   await memoryService.saveProduct(shirt);
-  await memoryService.saveProduct(sneakers);
+  await memoryService.saveProduct(jacket);
 
   const preferences = await preferenceMemory.savePreferences(user.id, {
-    favouriteCategories: ['shirts', 'sneakers'],
-    favouriteColors: ['blue', 'black'],
+    favouriteCategories: ['shirts', 'jackets'],
+    favouriteColors: ['blue', 'navy'],
     preferredPriceRange: {
       min: 1000,
-      max: 2500,
+      max: 3500,
       currency: 'INR',
     },
   });
@@ -92,9 +92,9 @@ async function runDemo() {
     occurredAt: moreThanThreeHoursAgo,
   });
 
-  const sneakerInterest = await interestTracker.recordCartAddition({
+  const jacketInterest = await interestTracker.recordCartAddition({
     userId: user.id,
-    product: sneakers,
+    product: jacket,
     occurredAt: moreThanThreeHoursAgo,
   });
 
@@ -128,7 +128,7 @@ async function runDemo() {
     `- ${shirt.title}: score ${shirtInterest.score}, ${shirtInterest.interestType}`,
   );
   console.log(
-    `- ${sneakers.title}: score ${sneakerInterest.score}, ${sneakerInterest.interestType}`,
+    `- ${jacket.title}: score ${jacketInterest.score}, ${jacketInterest.interestType}`,
   );
   console.log('\nStarting scheduler. It runs every 30 seconds.');
   console.log('First run happens immediately for this demo.');

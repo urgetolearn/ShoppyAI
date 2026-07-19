@@ -8,8 +8,11 @@
     "ui": "node src/server.js"
   },
   "dependencies": {
+    "@fal-ai/client": "1.10.1",
     "@google/generative-ai": "0.24.1",
+    "@gradio/client": "2.3.1",
     "dotenv": "^16.0.0",
+    "replicate": "1.4.0",
     "twilio": "^4.0.0"
   }
 }
