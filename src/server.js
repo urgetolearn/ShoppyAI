@@ -26,6 +26,7 @@ const { PromptBuilder } = require('./application/PromptBuilder');
 const { StyleVisualizationService } = require('./application/StyleVisualizationService');
 const { FluxImageProvider } = require('./infrastructure/imagegen/FluxImageProvider');
 const { FalCatVtonProvider } = require('./infrastructure/imagegen/FalCatVtonProvider');
+const { FashnVtonProvider } = require('./infrastructure/imagegen/FashnVtonProvider');
 const { GeneratedImageStorage } = require('./infrastructure/imagegen/GeneratedImageStorage');
 
 const PORT = Number(process.env.PORT ?? 3000);
