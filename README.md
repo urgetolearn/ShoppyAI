@@ -1,4 +1,4 @@
-# ShoppyAI – AI Shopping Recovery Agent
+# ShoppyAI – AI Shopping art Recovery Agent
 
 ShoppyAI is an AI-powered shopping recovery agent that intelligently re-engages users who repeatedly view or abandon products in an online marketplace.
 
