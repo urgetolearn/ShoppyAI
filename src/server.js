@@ -595,6 +595,8 @@ async function sendAssetFile(response, filePath) {
     response.writeHead(200, {
       'Cache-Control': 'no-store',
       'Content-Type': getContentType(absolutePath),
+      // Bypass ngrok interstitial so Twilio can fetch media directly
+      'ngrok-skip-browser-warning': '1',
     });
     response.end(content);
   } catch (error) {
@@ -618,6 +620,8 @@ async function sendUploadFile(response, filePath) {
     response.writeHead(200, {
       'Cache-Control': 'no-store',
       'Content-Type': getContentType(absolutePath),
+      // Bypass ngrok interstitial so Twilio can fetch media directly
+      'ngrok-skip-browser-warning': '1',
     });
     response.end(content);
   } catch (error) {
