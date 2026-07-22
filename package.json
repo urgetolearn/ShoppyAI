@@ -4,6 +4,7 @@
   "private": true,
   "description": "Incremental AI shopping reminder agent prototype.",
   "scripts": {
+    "start": "node src/server.js",
     "demo": "node src/demo/shoppy-demo.js",
     "ui": "node src/server.js"
   },
