@@ -135,7 +135,7 @@ npm run ui
 
 ---
 
-## 📹 Demo
+## Demo
 
 - **Live Demo:** *(Add your ngrok or deployment URL here)*
 - **Demo Video:** *(Add your Loom or YouTube link here)*
