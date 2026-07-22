@@ -1,4 +1,4 @@
-# 🛍️ ShoppyAI – AI Shopping Recovery Agent
+# ShoppyAI – AI Shopping Recovery Agent
 
 ShoppyAI is an AI-powered shopping recovery agent that intelligently re-engages users who repeatedly view or abandon products in an online marketplace.
 
@@ -6,19 +6,19 @@ Instead of sending generic reminder emails, ShoppyAI analyzes shopping behavior,
 
 ---
 
-## ✨ Features
+## Features
 
-- 🛒 Simulated AI-powered shopping marketplace
-- 🧠 User behavior tracking (views, cart additions)
-- 📈 Interest scoring and reminder planning
-- 💬 Personalized reminder message generation
-- 📱 WhatsApp notifications using Twilio
-- 🖼️ Product image delivery in WhatsApp
-- 🏗️ Modular agent architecture for future AI capabilities
+- Simulated AI-powered shopping marketplace
+- User behavior tracking (views, cart additions)
+- Interest scoring and reminder planning
+- Personalized reminder message generation
+- WhatsApp notifications using Twilio
+- Product image delivery in WhatsApp
+- Modular agent architecture for future AI capabilities
 
 ---
 
-## 🚀 Demo Flow
+## Demo Flow
 
 1. User browses products.
 2. User repeatedly views or adds products to cart.
@@ -29,7 +29,7 @@ Instead of sending generic reminder emails, ShoppyAI analyzes shopping behavior,
 
 ---
 
-## 🏛️ Architecture
+## Architecture
 
 ```
 Marketplace
@@ -55,7 +55,7 @@ User receives personalized reminder
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - Node.js
@@ -75,7 +75,7 @@ User receives personalized reminder
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 src/
@@ -89,7 +89,7 @@ src/
 
 ---
 
-## 💡 Why ShoppyAI?
+## Why ShoppyAI?
 
 Traditional abandoned-cart reminders are generic and often ignored.
 
@@ -102,18 +102,18 @@ ShoppyAI acts as an intelligent shopping companion by:
 
 ---
 
-## 🔮 Future Roadmap
+## Future Roadmap
 
-- 👕 AI-powered virtual try-on
-- 💰 Price drop alerts
-- ❤️ Wishlist intelligence
-- 🎯 Personalized fashion recommendations
-- 🤖 Conversational shopping assistant
-- 📊 Merchant analytics dashboard
+- AI-powered virtual try-on
+- Price drop alerts
+- Wishlist intelligence
+- Personalized fashion recommendations
+- Conversational shopping assistant
+- Merchant analytics dashboard
 
 ---
 
-## ▶️ Getting Started
+## Getting Started
 
 Clone the repository:
 
@@ -142,7 +142,7 @@ npm run ui
 
 ---
 
-## 👩‍💻 Author
+## Author
 
 **Chinmayi D S**
 
@@ -152,6 +152,6 @@ GitHub: https://github.com/urgetolearn
 
 ---
 
-## 📜 License
+## License
 
 This project was built for the **AI Agent Builder Series 2026** Hackathon.
