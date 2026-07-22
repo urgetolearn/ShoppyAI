@@ -36,7 +36,7 @@ import threading
 import time
 import urllib.request
 
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, jsonify
 from PIL import Image
 
 # ---------------------------------------------------------------------------
@@ -101,25 +101,31 @@ def health():
 @app.route("/try-on", methods=["POST"])
 def try_on():
     """
-    Accepts multipart/form-data with:
-      - person  : image file  (required)
-      - garment : image file  (required)
-      - category: string      (optional, default "tops")
+    Accepts JSON with:
+      - person_image_b64  : base64-encoded person image  (required)
+      - garment_image_b64 : base64-encoded garment image (required)
+      - category          : string (optional, default "tops")
 
-    Returns the generated image as image/png.
+    Returns JSON with:
+      - result_image_b64  : base64-encoded output PNG
+      - mime_type         : "image/png"
     """
-    if "person" not in request.files:
-        return jsonify({"error": "'person' image is required"}), 400
-    if "garment" not in request.files:
-        return jsonify({"error": "'garment' image is required"}), 400
+    import base64
 
-    category = request.form.get("category", "tops")
+    data = request.get_json(force=True, silent=True) or {}
+
+    if "person_image_b64" not in data:
+        return jsonify({"error": "'person_image_b64' is required"}), 400
+    if "garment_image_b64" not in data:
+        return jsonify({"error": "'garment_image_b64' is required"}), 400
+
+    category = data.get("category", "tops")
 
     try:
-        person_img = Image.open(request.files["person"]).convert("RGB")
-        garment_img = Image.open(request.files["garment"]).convert("RGB")
+        person_img  = Image.open(io.BytesIO(base64.b64decode(data["person_image_b64"]))).convert("RGB")
+        garment_img = Image.open(io.BytesIO(base64.b64decode(data["garment_image_b64"]))).convert("RGB")
     except Exception as e:
-        return jsonify({"error": f"Failed to read images: {str(e)}"}), 400
+        return jsonify({"error": f"Failed to decode images: {str(e)}"}), 400
 
     print(
         f"[try-on] Running pipeline — category={category}, "
@@ -137,8 +143,9 @@ def try_on():
     output_image.save(buf, format="PNG")
     buf.seek(0)
 
-    print(f"[try-on] Done — image size {buf.getbuffer().nbytes} bytes")
-    return send_file(buf, mimetype="image/png")
+    result_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+    print(f"[try-on] Done — {len(buf.getvalue())} bytes")
+    return jsonify({"result_image_b64": result_b64, "mime_type": "image/png"})
 
 
 # ---------------------------------------------------------------------------
